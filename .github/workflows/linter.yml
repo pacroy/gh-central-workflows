@@ -42,7 +42,7 @@ on:
 jobs:
   build:
     # Name the Job
-    name: Lint Code Base ${{ inputs.repository }}
+    name: Lint Code Base ${{ github.event.inputs.repository }}
     # Set the agent to run on
     runs-on: ubuntu-latest
 
@@ -58,8 +58,8 @@ jobs:
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
-          repository: ${{ inputs.repository }}
-          token: ${{ inputs.token }}
+          repository: ${{ github.event.inputs.repository }}
+          token: ${{ github.event.inputs.token }}
 
       ################################
       # Run Linter against code base #
@@ -67,6 +67,6 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: ${{ inputs.validate_all_code_base }}
-          DEFAULT_BRANCH: ${{ inputs.default_branch }}
-          GITHUB_TOKEN: ${{ inputs.token }}
+          VALIDATE_ALL_CODEBASE: ${{ github.event.inputs.validate_all_code_base }}
+          DEFAULT_BRANCH: ${{ github.event.inputs.default_branch }}
+          GITHUB_TOKEN: ${{ github.event.inputs.token }}
