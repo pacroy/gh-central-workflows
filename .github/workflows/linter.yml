@@ -19,6 +19,28 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Repository name with owner.'     
+        required: true
+        default: ${{ github.repository }}
+        type: string
+      token:
+        description: 'Personal access token (PAT) used to fetch the repository.'     
+        required: true
+        default: ${{ github.token }}
+        type: string
+      validate_all_code_base: 
+        description: 'Will parse the entire repository and find all files to validate across all types. NOTE: When set to false, only new or edited files will be parsed for validation.'
+        required: false
+        default: true
+        type: boolean
+      default_branch: 
+        description: 'The name of the repository default branch.'
+        required: false
+        default: 'main'
+        type: string
 
 ###############
 # Set the Job #
@@ -26,7 +48,7 @@ on:
 jobs:
   build:
     # Name the Job
-    name: Lint Code Base
+    name: Lint Code Base ${{ inputs.repository }}
     # Set the agent to run on
     runs-on: ubuntu-latest
 
@@ -42,6 +64,8 @@ jobs:
         with:
           # Full git history is needed to get a proper list of changed files within `super-linter`
           fetch-depth: 0
+          repository: ${{ inputs.repository }}
+          token: ${{ inputs.token }}
 
       ################################
       # Run Linter against code base #
@@ -49,6 +73,6 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: master
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: ${{ inputs.validate_all_code_base }}
+          DEFAULT_BRANCH: ${{ inputs.default_branch }}
+          GITHUB_TOKEN: ${{ inputs.token }}
